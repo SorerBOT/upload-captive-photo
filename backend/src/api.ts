@@ -1,7 +1,10 @@
 import express from "express";
-import formidable from "express-formidable";
+// import formidable from "express-formidable";
+import { captiveInsertHandler } from "./handlers/insert-captive-handler.js";
+import { getCaptiveHandler } from "./handlers/get-captive-handler.js";
+import { getContext } from "./postgres/get-context.js";
 
-import { uploadFileHandler } from "./handlers/file-handler.js";
+// import { uploadFileHandler } from "./handlers/file-handler.js";
 
 process.on("unhandledRejection", (err: any) =>
   console.error("[ALERT] Unhandled rejection: ", err, err && err.stack)
@@ -26,10 +29,16 @@ app.listen(PORT, () => {
   console.log(`Server runs on ${PORT}`);
 });
 
-app.post(
-  "/files",
-  formidable({
-    keepExtensions: true,
-  }),
-  uploadFileHandler
-);
+// app.post(
+//   "/files",
+//   formidable({
+//     keepExtensions: true,
+//   })
+//   // uploadFileHandler
+// );
+
+const context = getContext();
+context.isReady.then(() => {
+  app.post("/captives", captiveInsertHandler);
+  app.get("/captives/:identification", getCaptiveHandler);
+});

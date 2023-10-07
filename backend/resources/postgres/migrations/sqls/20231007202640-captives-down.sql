@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS captives_identification_idx;

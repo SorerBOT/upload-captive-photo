@@ -1,0 +1,48 @@
+{
+  "defaultEnv" : "local",
+  "sql-file": true,
+  "local": {
+    "driver": "pg",
+    "user": "postgres",
+    "password": "postgres",
+    "host": "localhost",
+    "database": "postgres",
+    "schema": "public"
+  },
+  "ci": {
+    "driver": "pg",
+    "user": {"ENV": "PGUSER"},
+    "password": {"ENV": "PGPASSWORD"},
+    "host": {"ENV": "PGHOST"},
+    "database": {"ENV": "PGDATABASE"}
+  },
+  "test": {
+    "driver": "pg",
+    "user": {"ENV": "PGUSER"},
+    "password": {"ENV": "PGPASSWORD"},
+    "host": {"ENV": "PGHOST"},
+    "database": {"ENV": "PGPASSWORD"}
+  },
+  "stage": {
+    "driver": "pg",
+    "user": {"ENV": "PGUSER"},
+    "password": {"ENV": "PGPASSWORD"},
+    "host": {"ENV": "PGHOST"},
+    "database": {"ENV": "PGDATABASE"}
+  },
+  "dev": {
+    "driver": "pg",
+    "user": {"ENV": "PGUSER"},
+    "password": {"ENV": "PGPASSWORD"},
+    "host": {"ENV": "PGHOST"},
+    "database": {"ENV": "PGDATABASE"}
+  },
+  "prod": {
+    "driver": "pg",
+    "user": {"ENV": "PGUSER"},
+    "password": {"ENV": "PGPASSWORD"},
+    "host": {"ENV": "PGHOST"},
+    "database": "rewire_prod",
+    "schema": "public"
+  }
+}
