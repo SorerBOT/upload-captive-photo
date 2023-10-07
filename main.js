@@ -51,30 +51,13 @@ async function authorize() {
   return client;
 }
 
-async function listFiles(drive) {
-  const res = await drive.files.list({
-    pageSize: 10,
-    fields: 'nextPageToken, files(id, name)',
-  });
-  const files = res.data.files;
-  if (files.length === 0) {
-    console.log('No files found.');
-    return;
-  }
-
-  console.log('Files:');
-  files.map((file) => {
-    console.log(`${file.name} (${file.id})`);
-  });
-}
-
-async function uploadMultipart(drive, localPath, mimeType) {
+async function uploadMultipart(drive, localPath, mimeType, folderId) {
     const requestBody = {
       name: path.basename(localPath),
       fields: 'id',
     };
-    if (requestBody) {
-        
+    if (folderId) {
+      requestBody.parents = [folderId]
     }
     const media = {
       mimeType: mimeType,
@@ -93,11 +76,37 @@ async function uploadMultipart(drive, localPath, mimeType) {
     }
 }
 
+async function getFolderID(drive, folderPath) {
+  const splitPath = folderPath.split(path.sep);
+  var folderId = null;
+  while (splitPath.length)
+  {
+    const currentFolder = splitPath.shift();
+    const requestBody = {
+      fields: 'files(id, name)',
+    }
+    if (folderId) {
+      requestBody.parents = [folderId]
+    }
+    const res = await drive.files.list(requestBody);
+    const files = res.data.files;
+    for (const x in files) {
+      const file = files[x]
+      if (file.name == currentFolder) {
+        folderId = file.id;
+      }
+    }
+  }
+  return folderId;
+}
+
 async function main()
 {
     var client = await authorize();
-    var service = google.drive({version: 'v3', auth: client});
-    //await listFiles(service);
-    await uploadMultipart(service, "photo.jpg", "image/jpeg");
+    var drive = google.drive({version: 'v3', auth: client});
+    //await listFiles(drive);
+    var testFolderID = await getFolderID(drive, "test/in_test")
+    console.log("test folder id = " + testFolderID)
+    await uploadMultipart(drive, "photo.jpg", "image/jpeg", testFolderID);
 }
 main()
