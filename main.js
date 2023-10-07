@@ -104,7 +104,7 @@ async function main()
 {
     var client = await authorize();
     var drive = google.drive({version: 'v3', auth: client});
-    //await listFiles(drive);
+    // Upload photo.jpg to test/in_test
     var testFolderID = await getFolderID(drive, "test/in_test")
     console.log("test folder id = " + testFolderID)
     await uploadMultipart(drive, "photo.jpg", "image/jpeg", testFolderID);
