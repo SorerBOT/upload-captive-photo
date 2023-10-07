@@ -1,4 +1,4 @@
-import { envs } from './envs';
+import envs from './envs.js';
 
 export const getEncryptionKey = () => ({
   key: envs.attachmentsEncryptionKey,

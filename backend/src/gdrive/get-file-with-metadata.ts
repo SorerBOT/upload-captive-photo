@@ -1,10 +1,24 @@
-import { getBucket, parseBucketPath } from './get-bucket';
-import { getGoogleStorageFileOptions } from './get-google-storage-file-options';
+import { WriteStream } from 'fs';
+import { Bucket } from '@google-cloud/storage';
+import { Metadata } from '@google-cloud/common';
+
+import { getBucket, parseBucketPath } from './get-bucket.js';
+import { getGoogleStorageFileOptions } from './get-google-storage-file-options.js';
+
+interface ReadFileOptions {
+  encryptionKey?: string;
+  outputStream?: WriteStream;
+}
+
+interface Result {
+  file?: Buffer;
+  metadata: any;
+}
 
 export const getFileWithMetadata = async (
-  filePath,
-  options = {},
-) => {
+  filePath: string,
+  options: ReadFileOptions = {},
+): Promise<Result> => {
   const { bucketName, path } = parseBucketPath(filePath);
   const bucket = await getBucket(bucketName);
 
@@ -13,7 +27,7 @@ export const getFileWithMetadata = async (
     return metadata[0];
   };
 
-  const isEncrypted = (metadata) => metadata.customerEncryption !== undefined;
+  const isEncrypted = (metadata: any) => metadata.customerEncryption !== undefined;
 
   const metadata = await getMetadata();
   const isFileEncrypted = isEncrypted(metadata);
@@ -35,23 +49,29 @@ export const getFileWithMetadata = async (
   return getFileWithMetadataBuffered({ bucket, path, metadata, ...options });
 };
 
+interface GetFileContentOptions extends ReadFileOptions {
+  bucket: Bucket;
+  path: string;
+  metadata: Metadata;
+}
+
 const getFileWithMetadataBuffered = ({
   bucket,
   path,
   metadata,
   encryptionKey,
-}) =>
+}: GetFileContentOptions): Promise<Result> =>
   new Promise((resolve, reject) => {
     const fileOptions = getGoogleStorageFileOptions(encryptionKey);
-    const contentBuffers = [];
+    const contentBuffers: Buffer[] = [];
 
     bucket
       .file(path, fileOptions)
       .createReadStream()
-      .on('data', (buf) => {
+      .on('data', (buf: Buffer) => {
         contentBuffers.push(Buffer.from(buf));
       })
-      .on('error', (error) => {
+      .on('error', (error: Error) => {
         reject(error);
       })
       .on('finish', () => {
@@ -67,15 +87,15 @@ const getFileWithMetadataStreamed = ({
   metadata,
   encryptionKey,
   outputStream,
-}) =>
+}: GetFileContentOptions): Promise<Result> =>
   new Promise((resolve, reject) => {
     const fileOptions = getGoogleStorageFileOptions(encryptionKey);
 
     bucket
       .file(path, fileOptions)
       .createReadStream()
-      .pipe(outputStream)
-      .on('error', (error) => {
+      .pipe(outputStream!)
+      .on('error', (error: Error) => {
         reject(error);
       })
       .on('finish', () => {

@@ -1,0 +1,9 @@
+{
+  "restartable": "rs",
+  "ignore": [".git", "node_modules/", "dist/", "coverage/"],
+  "watch": ["src/"],
+  "env": {
+    "LOCAL": "true"
+  },
+  "ext": "js,json,ts"
+}

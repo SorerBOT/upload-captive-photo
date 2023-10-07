@@ -1,8 +1,17 @@
-import { getBucket } from './get-bucket';
-import { PassThrough } from 'stream';
-import { getGoogleStorageFileOptions } from './get-google-storage-file-options';
+import { PassThrough } from "stream";
+import { getBucket } from "./get-bucket.js";
+import { getGoogleStorageFileOptions } from "./get-google-storage-file-options.js";
 
 const TIMEOUT = 20 * 1000; // 20 seconds
+
+export interface Options {
+  bucketName: string;
+  path: string;
+  data: Buffer;
+  contentType: string;
+  encryptionKey?: string;
+  customMetadata?: Record<string, unknown>;
+}
 
 export const storeFile = async ({
   bucketName,
@@ -10,7 +19,8 @@ export const storeFile = async ({
   data,
   contentType,
   encryptionKey,
-}) => {
+  customMetadata = {},
+}: Options) => {
   const dataStream = new PassThrough();
   const bucket = await getBucket(bucketName);
 
@@ -23,15 +33,16 @@ export const storeFile = async ({
           validation: false,
           timeout: TIMEOUT,
           metadata: {
-            'Cache-Control': 'public, max-age=31536000',
-            'Content-Type': contentType,
+            "Cache-Control": "public, max-age=31536000",
+            "Content-Type": contentType,
+            ...customMetadata,
           },
-        }),
+        })
       )
-      .on('error', (error) => {
+      .on("error", (error: Error) => {
         reject(error);
       })
-      .on('finish', () => {
+      .on("finish", () => {
         resolve(true);
       });
 
