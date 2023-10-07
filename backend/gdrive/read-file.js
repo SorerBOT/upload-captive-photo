@@ -1,15 +1,11 @@
 import { WriteStream } from 'fs';
 import { getFileWithMetadata } from './get-file-with-metadata';
 
-interface ReadFileOptions {
-  encryptionKey?: string;
-  outputStream?: WriteStream;
-}
 
 export const readFile = async (
-  filePath: string,
-  options: ReadFileOptions = {},
-): Promise<Buffer | undefined> => {
+  filePath,
+  options = {},
+) => {
   const { file } = await getFileWithMetadata(filePath, options);
 
   return file;

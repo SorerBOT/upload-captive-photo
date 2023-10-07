@@ -1,6 +1,6 @@
 import { getBucket, parseBucketPath } from './get-bucket';
 
-export const fileExists = async (filePath: string): Promise<boolean> => {
+export const fileExists = async (filePath)  => {
   const { bucketName, path } = parseBucketPath(filePath);
   const bucket = await getBucket(bucketName);
 

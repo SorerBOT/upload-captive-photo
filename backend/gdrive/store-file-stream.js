@@ -2,19 +2,13 @@ import { PassThrough, Writable } from 'stream';
 import { getBucket } from './get-bucket';
 import { getEncryptionKey } from './get-encryption-key';
 import { getGoogleStorageFileOptions } from './get-google-storage-file-options';
-import envs from './envs';
+import { envs } from './envs';
 
 const TIMEOUT = 20 * 1000; // 20 seconds
 
-export interface Options {
-  file: NodeJS.ReadableStream;
-  filename: string;
-  contentType: string;
-  cb: any;
-}
 
-export const storeFileStream = ({ file, filename, contentType, cb }: Options): void => {
-  const bucketName = envs.tempAttachmentStorageBucket!;
+export const storeFileStream = ({ file, filename, contentType, cb }) => {
+  const bucketName = envs.tempAttachmentStorageBucket;
   const bucket = getBucket(bucketName);
   const { key: encryptionKey } = getEncryptionKey();
   const path = `${Date.now()}_${Math.floor(Math.random() * 10000)}_${filename}`;
@@ -32,7 +26,7 @@ export const storeFileStream = ({ file, filename, contentType, cb }: Options): v
         },
       }),
     )
-    .on('error', (error: Error) => {
+    .on('error', (error) => {
       console.error('[StoreFileStream] Failed to upload file', path, error);
       cb(undefined, error);
     })

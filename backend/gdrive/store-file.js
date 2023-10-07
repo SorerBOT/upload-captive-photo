@@ -4,21 +4,13 @@ import { getGoogleStorageFileOptions } from './get-google-storage-file-options';
 
 const TIMEOUT = 20 * 1000; // 20 seconds
 
-export interface Options {
-  bucketName: string;
-  path: string;
-  data: Buffer;
-  contentType: string;
-  encryptionKey?: string;
-}
-
 export const storeFile = async ({
   bucketName,
   path,
   data,
   contentType,
   encryptionKey,
-}: Options) => {
+}) => {
   const dataStream = new PassThrough();
   const bucket = await getBucket(bucketName);
 
@@ -36,7 +28,7 @@ export const storeFile = async ({
           },
         }),
       )
-      .on('error', (error: Error) => {
+      .on('error', (error) => {
         reject(error);
       })
       .on('finish', () => {

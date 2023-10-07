@@ -1,6 +1,6 @@
 import env from '../../env';
 
-export default {
+export const envs = {
   get tempAttachmentStorageBucket() {
     return process.env.GOOGLE_CLOUD_STORAGE_ATTACHMENTS_TEMP_BUCKET;
   },

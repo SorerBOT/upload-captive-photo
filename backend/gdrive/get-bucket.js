@@ -5,22 +5,22 @@ import { Bucket, Storage, StorageOptions } from '@google-cloud/storage';
 
 const PATH_EXTRACTOR = /^gs:\/\/(.*?)\/(.*)$/i;
 
-let storage: Storage;
+let storage;
 
 const getStorage = () => {
   if (!storage) {
-    const credentials: StorageOptions = getGoogleCloudCredentials();
+    const credentials = getGoogleCloudCredentials();
     storage = new Storage(credentials);
   }
   return storage;
 };
 
-export const getBucket = (bucketName: string): Bucket => {
+export const getBucket = (bucketName) => {
   const bucket = getStorage().bucket(bucketName);
   return bucket;
 };
 
-export const parseBucketPath = (path: string) => {
+export const parseBucketPath = (path) => {
   const matches = path.match(PATH_EXTRACTOR);
   if (!matches) {
     throw400(`failed to parse bucket from path ${path}`, INVALID_BUCKET_PATH);
